@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "pipelines-py"
+authors:
+  - family-names: "Billato"
+    given-names: "Ilaria"
+  - family-names: "Kitak"
+    given-names: "Tom"
+version: "1.0.0"
+url: "https://github.com/scrna-bench/pipelines-py"
+license: MIT
+references:
+  - type: article
+    authors:
+      - family-names: "Billato"
+        given-names: "Ilaria"
+    title: "PCA scRNA workflow paper"
+    doi: "10.1101/2025.10.28.681564"
