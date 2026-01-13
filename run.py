@@ -111,10 +111,15 @@ print("Time Elapsed:", time_elapsed)
 time_sc.iloc[3, 0] = time_elapsed
 
 
-df = pd.DataFrame(adata.raw.var.highly_variable, columns=['hvg'])
-df.to_csv(os.path.join(args.output_dir, f'{args.name}.hvgs.tsv'), sep='\t', index=False)
+#df = pd.DataFrame(adata.raw.var.highly_variable, columns=['hvg'])
+#df.to_csv(os.path.join(args.output_dir, f'{args.name}.hvgs.tsv'), sep='\t', index=False)
 #df.to_excel(os.path.join(args.output_dir, f'{args.name}_hvg.xlsx'), index=False)
 
+hvg_list = list(adata.var.highly_variable.index)
+fn = os.path.join(args.output_dir, f'{args.name}.hvgs.tsv')
+
+with open(fn, "w") as outfile:
+    outfile.write("\n".join(hvg_list))
 
 # Scaling the data ####
 start_time = time.time()
