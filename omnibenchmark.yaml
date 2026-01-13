@@ -1,2 +1,2 @@
 entrypoints:
-  default: scanpy_sc_mix.py
+  default: run.py
