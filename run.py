@@ -41,7 +41,7 @@ adata.var_names_make_unique()
 adata
 
 
-sc.pl.highest_expr_genes(adata, n_top=20, )
+#sc.pl.highest_expr_genes(adata, n_top=20, )
 
 # find mitocondrial genes ####
 start_time = time.time()
@@ -49,8 +49,8 @@ start_time = time.time()
 adata.var['mt'] = adata.var_names.str.startswith('MT-')
 sc.pp.calculate_qc_metrics(adata, qc_vars=['mt'], percent_top=None, log1p=False, inplace=True)
 
-sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt'],
-             jitter=0.4, multi_panel=True)
+#sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt'],
+#             jitter=0.4, multi_panel=True)
 
 end_time = time.time()
 time_elapsed = end_time - start_time
@@ -63,8 +63,8 @@ start_time = time.time()
 sc.pp.filter_cells(adata, min_genes=200)
 sc.pp.filter_genes(adata, min_cells=3)
 
-sc.pl.scatter(adata, x='total_counts', y='pct_counts_mt')
-sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts')
+#sc.pl.scatter(adata, x='total_counts', y='pct_counts_mt')
+#sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts')
 
 adata = adata[adata.obs.n_genes_by_counts < 5000, :]
 adata = adata[adata.obs.pct_counts_mt < 5, :]
@@ -88,9 +88,8 @@ time_sc.iloc[2, 0] = time_elapsed
 # Identification of highly variable features (feature selection) ####
 start_time = time.time()
 
-sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5,
-n_top_genes = 1000)
-sc.pl.highly_variable_genes(adata)
+sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5, n_top_genes = 1000)
+#sc.pl.highly_variable_genes(adata)
 
 adata.raw = adata
 adata = adata[:, adata.var.highly_variable]
@@ -101,7 +100,7 @@ print("Time Elapsed:", time_elapsed)
 time_sc.iloc[3, 0] = time_elapsed
 
 
-df = pd.DataFrame(adata.var.highly_variable, columns=['hvg'])
+df = pd.DataFrame(adata.raw.var.highly_variable, columns=['hvg'])
 df.to_csv(os.path.join(args.output_dir, f'{args.name}.hvgs.tsv'), sep='\t', index=False)
 #df.to_excel(os.path.join(args.output_dir, f'{args.name}_hvg.xlsx'), index=False)
 
@@ -123,8 +122,8 @@ time_sc.iloc[4, 0] = time_elapsed
 start_time = time.time()
 
 sc.tl.pca(adata, svd_solver='arpack')
-sc.pl.pca(adata, color='CST3')
-sc.pl.pca_variance_ratio(adata, log=True)
+#sc.pl.pca(adata, color='CST3')
+#sc.pl.pca_variance_ratio(adata, log=True)
 
 adata
 
