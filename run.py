@@ -14,6 +14,10 @@ import time
 import anndata
 from sklearn.metrics import adjusted_rand_score
 from sklearn.metrics import silhouette_score
+import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 # Parse command line arguments
@@ -34,11 +38,13 @@ time_sc = pd.DataFrame(index=["find_mit_gene", "filter", "normalization", "hvg",
                            "scaling", "PCA", "t-sne", "umap", "louvain", "leiden"],
                     columns=["time_sec"])
 
-
 # data ####
 adata = sc.read_h5ad(args.data_h5ad)
 adata.var_names_make_unique()
 adata
+
+eprint("after loading: ", adata.shape)
+
 
 
 #sc.pl.highest_expr_genes(adata, n_top=20, )
@@ -62,6 +68,7 @@ start_time = time.time()
 
 sc.pp.filter_cells(adata, min_genes=200)
 sc.pp.filter_genes(adata, min_cells=3)
+eprint("after filtering1: ", adata.shape)
 
 #sc.pl.scatter(adata, x='total_counts', y='pct_counts_mt')
 #sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts')
@@ -70,6 +77,7 @@ adata = adata[adata.obs.n_genes_by_counts < 5000, :]
 adata = adata[adata.obs.pct_counts_mt < 5, :]
 
 end_time = time.time()
+eprint("after filtering2: ", adata.shape)
 time_elapsed = end_time - start_time
 print("Time Elapsed:", time_elapsed)
 time_sc.iloc[1, 0] = time_elapsed
@@ -95,6 +103,9 @@ adata.raw = adata
 adata = adata[:, adata.var.highly_variable]
 
 end_time = time.time()
+eprint("'adata.raw' after HVGs: ", adata.raw.shape)
+eprint("'adata' after HVGs: ", adata.shape)
+
 time_elapsed = end_time - start_time
 print("Time Elapsed:", time_elapsed)
 time_sc.iloc[3, 0] = time_elapsed
