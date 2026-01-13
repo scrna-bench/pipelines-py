@@ -226,7 +226,7 @@ cluster_df = pd.DataFrame({
 })
 #if 'cell_line' in adata.obs.columns:
 #    cluster_df['cell_line'] = adata.obs['cell_line'].values
-cluster_df.to_csv(os.path.join(args.output_dir, f'{args.name}.cluster.tsv'), sep='\t', index=False)
+cluster_df.to_csv(os.path.join(args.output_dir, f'{args.name}.clusters.tsv'), sep='\t', index=False)
 
 # Save PCA coordinates as TSV
 pca_df = pd.DataFrame(
