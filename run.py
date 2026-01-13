@@ -102,7 +102,8 @@ time_sc.iloc[3, 0] = time_elapsed
 
 
 df = pd.DataFrame(adata.var.highly_variable, columns=['hvg'])
-df.to_excel(os.path.join(args.output_dir, f'{args.name}_hvg.xlsx'), index=False)
+df.to_csv(os.path.join(args.output_dir, f'{args.name}.hvgs.tsv'), sep='\t', index=False)
+#df.to_excel(os.path.join(args.output_dir, f'{args.name}_hvg.xlsx'), index=False)
 
 
 # Scaling the data ####
@@ -162,16 +163,16 @@ time_elapsed = end_time - start_time
 print("Time Elapsed:", time_elapsed)
 time_sc.iloc[8, 0] = time_elapsed
 
-true_labels = adata.obs['cell_line'].astype(str)
-predicted_labels = adata.obs['louvain'].astype(str)
+#true_labels = adata.obs['cell_line'].astype(str)
+#predicted_labels = adata.obs['louvain'].astype(str)
 
 
 
 # Compute the ARI
-ari_score = adjusted_rand_score(true_labels, predicted_labels)
+#ari_score = adjusted_rand_score(true_labels, predicted_labels)
 
 # Print the ARI score
-print("Adjusted Rand Index (ARI):", ari_score)
+#print("Adjusted Rand Index (ARI):", ari_score)
 
 cluster_labels = adata.obs['louvain']
 
@@ -192,14 +193,14 @@ time_elapsed = end_time - start_time
 print("Time Elapsed:", time_elapsed)
 time_sc.iloc[9, 0] = time_elapsed
 
-true_labels = adata.obs['cell_line'].astype(str)
-predicted_labels = adata.obs['leiden'].astype(str)
+#true_labels = adata.obs['cell_line'].astype(str)
+#predicted_labels = adata.obs['leiden'].astype(str)
 
 # Compute the ARI
-ari_score = adjusted_rand_score(true_labels, predicted_labels)
+#ari_score = adjusted_rand_score(true_labels, predicted_labels)
 
 # Print the ARI score
-print("Adjusted Rand Index (ARI):", ari_score)
+#print("Adjusted Rand Index (ARI):", ari_score)
 
 cluster_labels = adata.obs['leiden']
 
@@ -237,4 +238,4 @@ pca_df = pd.DataFrame(
 pca_df.to_csv(os.path.join(args.output_dir, f'{args.name}.pca.tsv'), sep='\t', index=True)
 
 # Also save the full h5ad file
-adata.write(os.path.join(args.output_dir, f'{args.name}.h5ad'))
+#adata.write(os.path.join(args.output_dir, f'{args.name}.h5ad'))
