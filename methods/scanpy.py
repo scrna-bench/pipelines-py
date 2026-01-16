@@ -16,19 +16,19 @@ def run_scanpy(adata, timings: dict["str", None | float]):
     print("Time Elapsed:", time_elapsed)
     timings["find_mit_gene"] = time_elapsed
 
-    eprint("after loading: ", adata.shape)
+    print("after loading:", adata.shape)
 
     # filter data ####
     start_time = time()
     sc.pp.filter_cells(adata, min_genes=200)
     sc.pp.filter_genes(adata, min_cells=3)
-    eprint("after filtering1: ", adata.shape)
+    print("after filtering1:", adata.shape)
 
     adata = adata[adata.obs.n_genes_by_counts < 5000, :]
     adata = adata[adata.obs.pct_counts_mt < 5, :]
 
     end_time = time()
-    eprint("after filtering2: ", adata.shape)
+    print("after filtering2:", adata.shape)
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["filter"] = time_elapsed
@@ -50,8 +50,8 @@ def run_scanpy(adata, timings: dict["str", None | float]):
     adata.raw = adata
     adata = adata[:, adata.var.highly_variable]
     end_time = time()
-    eprint("'adata.raw' after HVGs: ", adata.raw.shape)
-    eprint("'adata' after HVGs: ", adata.shape)
+    print("'adata.raw' after HVGs:", adata.raw.shape)
+    print("'adata' after HVGs:", adata.shape)
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["hvg"] = time_elapsed
