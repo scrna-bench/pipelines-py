@@ -116,3 +116,5 @@ def run_scanpy(adata, timings: dict["str", None | float]):
 
     # Print the average silhouette score
     print("Average Silhouette Score:", silhouette_avg)
+
+    return adata

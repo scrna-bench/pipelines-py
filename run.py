@@ -53,7 +53,7 @@ adata = sc.read_h5ad(args.data_h5ad)
 adata.var_names_make_unique()
 
 if args.method_name == "scanpy":
-    run_scanpy(adata, timings)
+    adata = run_scanpy(adata, timings)
 
 
 # Save timings as JSON
