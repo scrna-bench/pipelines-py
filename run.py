@@ -3,19 +3,19 @@
 # Modified by: Tom Kitak (Omnibenchmark compatibility)
 # License: MIT (see repository LICENSE)
 
+import os
+import sys
 import argparse
 import json
-import os
+from pathlib import Path
 
 import pandas as pd
 import scanpy as sc
-import time
-from sklearn.metrics import silhouette_score
-import sys
 
+repo_dir = Path(__file__).parent
+sys.path.insert(0, str(repo_dir))
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+from methods.scanpy import run_scanpy
 
 
 # Parse command line arguments
@@ -27,196 +27,38 @@ parser.add_argument("--name", "-n", type=str, required=True, help="Dataset name"
 parser.add_argument(
     "--data.h5ad", dest="data_h5ad", type=str, required=True, help="Input h5ad file"
 )
-parser.add_argument("--method_name", type=str, default="scanpy", help="Method to run")
+parser.add_argument(
+    "--method_name", type=str, choices=["scanpy", "rapids"], help="Method to run"
+)
 args, _ = parser.parse_known_args()
 
-# Create output directory
-os.makedirs(args.output_dir, exist_ok=True)
+# time object to store time involved (in seconds) in each step
+timings = {
+    "find_mit_gene": None,
+    "filter": None,
+    "normalization": None,
+    "hvg": None,
+    "scaling": None,
+    "pca": None,
+    "t_sne": None,
+    "umap": None,
+    "louvain": None,
+    "leiden": None,
+}
 
 sc.settings.verbosity = 3
-
-# save time usage ####
-time_sc = pd.DataFrame(
-    index=[
-        "find_mit_gene",
-        "filter",
-        "normalization",
-        "hvg",
-        "scaling",
-        "pca",
-        "t_sne",
-        "umap",
-        "louvain",
-        "leiden",
-    ],
-    columns=["time_sec"],
-)
 
 # data ####
 adata = sc.read_h5ad(args.data_h5ad)
 adata.var_names_make_unique()
-adata
 
-eprint("after loading: ", adata.shape)
+if args.method_name == "scanpy":
+    run_scanpy(adata, timings)
 
-# find mitocondrial genes ####
-start_time = time.time()
-
-adata.var["mt"] = adata.var_names.str.startswith("MT-")
-sc.pp.calculate_qc_metrics(
-    adata, qc_vars=["mt"], percent_top=None, log1p=False, inplace=True
-)
-
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[0, 0] = time_elapsed
-
-# filter data ####
-start_time = time.time()
-
-sc.pp.filter_cells(adata, min_genes=200)
-sc.pp.filter_genes(adata, min_cells=3)
-eprint("after filtering1: ", adata.shape)
-
-
-adata = adata[adata.obs.n_genes_by_counts < 5000, :]
-adata = adata[adata.obs.pct_counts_mt < 5, :]
-
-end_time = time.time()
-eprint("after filtering2: ", adata.shape)
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[1, 0] = time_elapsed
-
-# normalization ####
-start_time = time.time()
-
-sc.pp.normalize_total(adata, target_sum=1e4)
-sc.pp.log1p(adata)
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[2, 0] = time_elapsed
-
-# Identification of highly variable features (feature selection) ####
-start_time = time.time()
-
-sc.pp.highly_variable_genes(
-    adata, min_mean=0.0125, max_mean=3, min_disp=0.5, n_top_genes=1000
-)
-# sc.pl.highly_variable_genes(adata)
-
-adata.raw = adata
-adata = adata[:, adata.var.highly_variable]
-
-end_time = time.time()
-eprint("'adata.raw' after HVGs: ", adata.raw.shape)
-eprint("'adata' after HVGs: ", adata.shape)
-
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[3, 0] = time_elapsed
-
-
-hvg_list = list(adata.var.highly_variable.index)
-fn = os.path.join(args.output_dir, f"{args.name}.hvgs.tsv")
-
-with open(fn, "w") as outfile:
-    outfile.write("\n".join(hvg_list))
-
-# Scaling the data ####
-start_time = time.time()
-
-sc.pp.scale(adata, max_value=10)
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[4, 0] = time_elapsed
-
-
-# PCA ####
-start_time = time.time()
-
-sc.tl.pca(adata, svd_solver="arpack")
-# sc.pl.pca(adata, color='CST3')
-# sc.pl.pca_variance_ratio(adata, log=True)
-
-adata
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[5, 0] = time_elapsed
-
-# t-sne ####
-start_time = time.time()
-
-sc.tl.tsne(adata)
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[6, 0] = time_elapsed
-
-# UMAP ####
-start_time = time.time()
-sc.pp.neighbors(adata, n_neighbors=10, n_pcs=50)
-sc.tl.umap(adata)
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[7, 0] = time_elapsed
-
-# louvain ####
-start_time = time.time()
-
-sc.tl.louvain(adata, resolution=0.13)
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[8, 0] = time_elapsed
-
-cluster_labels = adata.obs["louvain"]
-
-# Calculate silhouette scores
-silhouette_avg = silhouette_score(adata.X, cluster_labels)
-
-# Print the average silhouette score
-print("Average Silhouette Score:", silhouette_avg)
-
-
-# leiden ####
-start_time = time.time()
-
-sc.tl.leiden(adata, resolution=0.13)
-
-end_time = time.time()
-time_elapsed = end_time - start_time
-print("Time Elapsed:", time_elapsed)
-time_sc.iloc[9, 0] = time_elapsed
-
-cluster_labels = adata.obs["leiden"]
-
-# Calculate silhouette scores
-silhouette_avg = silhouette_score(adata.X, cluster_labels)
-
-# Print the average silhouette score
-print("Average Silhouette Score:", silhouette_avg)
-
-time_sc
-
-# Save outputs for omnibenchmark ####
 
 # Save timings as JSON
-timings_dict = time_sc["time_sec"].to_dict()
 with open(os.path.join(args.output_dir, f"{args.name}.timings.json"), "w") as f:
-    json.dump(timings_dict, f, indent=2)
+    json.dump(timings, f, indent=2)
 
 # Save cluster assignments as TSV
 cluster_df = pd.DataFrame(
@@ -226,10 +68,16 @@ cluster_df = pd.DataFrame(
         "leiden": adata.obs["leiden"].values,
     }
 )
-# if 'cell_line' in adata.obs.columns:
-#    cluster_df['cell_line'] = adata.obs['cell_line'].values
 cluster_df.to_csv(
     os.path.join(args.output_dir, f"{args.name}.clusters.tsv"), sep="\t", index=False
+)
+
+hvg_list = adata.var.highly_variable.index.to_series()
+hvg_list.to_csv(
+    os.path.join(args.output_dir, f"{args.name}.hvgs.tsv"),
+    sep="\t",
+    index=False,
+    header=False,
 )
 
 # Save PCA coordinates as TSV
