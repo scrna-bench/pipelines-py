@@ -61,15 +61,10 @@ with open(os.path.join(args.output_dir, f"{args.name}.timings.json"), "w") as f:
     json.dump(timings, f, indent=2)
 
 # Save cluster assignments as TSV
-cluster_df = pd.DataFrame(
-    {
-        "cell_id": adata.obs_names,
-        "louvain": adata.obs["louvain"].values,
-        "leiden": adata.obs["leiden"].values,
-    }
-)
-cluster_df.to_csv(
-    os.path.join(args.output_dir, f"{args.name}.clusters.tsv"), sep="\t", index=False
+adata.obs[["louvain", "leiden"]].reset_index(names="cell_id").to_csv(
+    os.path.join(args.output_dir, f"{args.name}.clusters.tsv"),
+    sep="\t",
+    index=False,
 )
 
 hvg_list = adata.var.highly_variable.index.to_series()
