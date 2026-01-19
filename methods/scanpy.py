@@ -1,5 +1,6 @@
 from time import time
 
+import numpy as np
 import scanpy as sc
 from sklearn.metrics import silhouette_score
 
@@ -20,12 +21,17 @@ def run_scanpy(adata, timings: dict["str", None | float]):
 
     # filter data ####
     start_time = time()
-    sc.pp.filter_cells(adata, min_genes=200)
+    qc = adata.uns["qc_thresholds"]
+    min_genes = qc[qc["metric"] == "nFeature"]["min"].values[0]
+    max_genes = qc[qc["metric"] == "nFeature"]["max"].values[0]
+    max_mt = qc[qc["metric"] == "percent.mt"]["max"].values[0]
+
+    sc.pp.filter_cells(adata, min_genes=min_genes)
     sc.pp.filter_genes(adata, min_cells=3)
     print("after filtering1:", adata.shape)
 
-    adata = adata[adata.obs.n_genes_by_counts < 5000, :]
-    adata = adata[adata.obs.pct_counts_mt < 5, :]
+    adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
+    adata = adata[adata.obs.pct_counts_mt < max_mt, :]
 
     end_time = time()
     print("after filtering2:", adata.shape)
