@@ -95,9 +95,12 @@ def run_scanpy(adata, timings: dict["str", None | float]):
     print("Time Elapsed:", time_elapsed)
     timings["umap"] = time_elapsed
 
+    rslns = adata.uns["rslns"]
     # louvain ####
     start_time = time()
-    sc.tl.louvain(adata, resolution=0.13)
+    sc.tl.louvain(
+        adata, resolution=rslns[rslns["method"] == "louvain"]["resolution"].values[0]
+    )
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
@@ -111,7 +114,9 @@ def run_scanpy(adata, timings: dict["str", None | float]):
 
     # leiden ####
     start_time = time()
-    sc.tl.leiden(adata, resolution=0.13)
+    sc.tl.leiden(
+        adata, resolution=rslns[rslns["method"] == "leiden"]["resolution"].values[0]
+    )
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
