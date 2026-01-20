@@ -95,7 +95,7 @@ def run_scanpy(adata, timings: dict["str", None | float]):
     print("Time Elapsed:", time_elapsed)
     timings["umap"] = time_elapsed
 
-    rslns = adata.uns["rslns"]
+    rslns = adata.uns["resolutions"]
     # louvain ####
     start_time = time()
     sc.tl.louvain(
