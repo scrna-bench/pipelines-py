@@ -5,7 +5,7 @@ import scanpy as sc
 from sklearn.metrics import silhouette_score
 
 
-def run_scanpy(adata, timings: dict["str", None | float]):
+def run_scanpy(adata, resolution: float, timings: dict["str", None | float]):
     # find mitocondrial genes ####
     start_time = time()
     adata.var["mt"] = adata.var_names.str.startswith("MT-")
@@ -95,12 +95,9 @@ def run_scanpy(adata, timings: dict["str", None | float]):
     print("Time Elapsed:", time_elapsed)
     timings["umap"] = time_elapsed
 
-    rslns = adata.uns["resolutions"]
     # louvain ####
     start_time = time()
-    sc.tl.louvain(
-        adata, resolution=rslns[rslns["method"] == "louvain"]["resolution"].values[0]
-    )
+    sc.tl.louvain(adata, resolution=resolution)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
@@ -114,9 +111,7 @@ def run_scanpy(adata, timings: dict["str", None | float]):
 
     # leiden ####
     start_time = time()
-    sc.tl.leiden(
-        adata, resolution=rslns[rslns["method"] == "leiden"]["resolution"].values[0]
-    )
+    sc.tl.leiden(adata, resolution=resolution)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
