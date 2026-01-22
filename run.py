@@ -31,6 +31,14 @@ parser.add_argument(
     "--method_name", type=str, choices=["scanpy", "rapids"], help="Method to run"
 )
 parser.add_argument("--resolution", type=float, help="clustering resolution")
+# only have manual filtering
+parser.add_argument(
+    "--filter",
+    type=str,
+    choices=["manual"],
+    default="manual",
+    help="filtering strategy (manual uses suggested cutoffs; auto uses package QC)",
+)
 args, _ = parser.parse_known_args()
 
 # time object to store time involved (in seconds) in each step
@@ -54,7 +62,7 @@ adata = sc.read_h5ad(args.data_h5ad)
 adata.var_names_make_unique()
 
 if args.method_name == "scanpy":
-    adata = run_scanpy(adata, args.resolution, timings)
+    adata = run_scanpy(adata, args.resolution, args.filter, timings)
 
 
 # Save timings as JSON
