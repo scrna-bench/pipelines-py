@@ -1,13 +1,15 @@
 from time import time
 
-import numpy as np
 import scanpy as sc
 from sklearn.metrics import silhouette_score
 
 
 def run_scanpy(
-    adata, resolution: float, filter: str, timings: dict["str", None | float]
-):
+    adata: sc.AnnData,
+    resolution: float,
+    filter: str,
+    timings: dict[str, None | float],
+) -> sc.AnnData:
     # find mitocondrial genes ####
     start_time = time()
     adata.var["mt"] = adata.var_names.str.startswith("MT-")

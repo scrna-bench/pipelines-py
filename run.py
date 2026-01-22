@@ -15,7 +15,7 @@ import scanpy as sc
 repo_dir = Path(__file__).parent
 sys.path.insert(0, str(repo_dir))
 
-from methods.scanpy import run_scanpy
+from methods import run_scanpy
 
 
 # Parse command line arguments
