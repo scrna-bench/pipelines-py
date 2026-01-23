@@ -15,7 +15,7 @@ import scanpy as sc
 repo_dir = Path(__file__).parent
 sys.path.insert(0, str(repo_dir))
 
-from methods import run_scanpy
+from methods import run_scanpy, run_rapids
 
 
 # Parse command line arguments
@@ -42,7 +42,7 @@ parser.add_argument(
 args, _ = parser.parse_known_args()
 
 # time object to store time involved (in seconds) in each step
-timings = {
+timings: dict[str, float | None] = {
     "find_mit_gene": None,
     "filter": None,
     "normalization": None,
@@ -63,6 +63,8 @@ adata.var_names_make_unique()
 
 if args.method_name == "scanpy":
     adata = run_scanpy(adata, args.resolution, args.filter, timings)
+elif args.method_name == "rapids":
+    adata = run_rapids(adata, args.resolution, args.filter, timings)
 
 
 # Save timings as JSON
