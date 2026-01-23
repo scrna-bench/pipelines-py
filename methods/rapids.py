@@ -74,7 +74,7 @@ def run_rapids(
     )
     adata.raw = adata
     adata = adata[:, adata.var["highly_variable"]]
-    rsc.pp.regress_out(adata, keys=["total_counts", "pct_counts_MT"])
+    rsc.pp.regress_out(adata, keys=["total_counts", "pct_counts_mt"])
     end_time = time()
     print("'adata.raw' after HVGs:", adata.raw.shape)
     print("'adata' after HVGs:", adata.shape)
