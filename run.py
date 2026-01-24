@@ -93,5 +93,8 @@ pca_df = pd.DataFrame(
     columns=[f"PC{i+1}" for i in range(adata.obsm["X_pca"].shape[1])],
 )
 pca_df.to_csv(
-    os.path.join(args.output_dir, f"{args.name}.pca.tsv"), sep="\t", index=True
+    os.path.join(args.output_dir, f"{args.name}.pca.tsv"),
+    sep="\t",
+    index=True,
+    index_label="cell_id",
 )
