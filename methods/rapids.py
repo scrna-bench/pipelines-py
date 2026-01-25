@@ -5,7 +5,6 @@ import cupy as cp
 import rmm
 import rapids_singlecell as rsc
 from rmm.allocators.cupy import rmm_cupy_allocator
-from sklearn.metrics import silhouette_score
 
 
 def run_rapids(
@@ -132,17 +131,5 @@ def run_rapids(
     timings["leiden"] = time_elapsed
 
     rsc.get.anndata_to_CPU(adata, convert_all=True)
-
-    # Calculate silhouette scores
-    silhouette_avg = silhouette_score(adata.X, adata.obs["louvain"])
-
-    # Print the average silhouette score
-    print("Average Silhouette Score:", silhouette_avg)
-
-    # Calculate silhouette scores
-    silhouette_avg = silhouette_score(adata.X, adata.obs["leiden"])
-
-    # Print the average silhouette score
-    print("Average Silhouette Score:", silhouette_avg)
 
     return adata

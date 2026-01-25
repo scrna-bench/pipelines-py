@@ -1,7 +1,6 @@
 from time import time
 
 import scanpy as sc
-from sklearn.metrics import silhouette_score
 
 
 def run_scanpy(
@@ -108,12 +107,6 @@ def run_scanpy(
     print("Time Elapsed:", time_elapsed)
     timings["louvain"] = time_elapsed
 
-    # Calculate silhouette scores
-    silhouette_avg = silhouette_score(adata.X, adata.obs["louvain"])
-
-    # Print the average silhouette score
-    print("Average Silhouette Score:", silhouette_avg)
-
     # leiden ####
     start_time = time()
     sc.tl.leiden(adata, resolution=resolution)
@@ -121,11 +114,5 @@ def run_scanpy(
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["leiden"] = time_elapsed
-
-    # Calculate silhouette scores
-    silhouette_avg = silhouette_score(adata.X, adata.obs["leiden"])
-
-    # Print the average silhouette score
-    print("Average Silhouette Score:", silhouette_avg)
 
     return adata
