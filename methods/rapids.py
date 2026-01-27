@@ -10,6 +10,8 @@ from rmm.allocators.cupy import rmm_cupy_allocator
 def run_rapids(
     adata: sc.AnnData,
     resolution: float,
+    n_comp: int,
+    n_neig: int,
     filter: str,
     timings: dict[str, None | float],
 ) -> sc.AnnData:
@@ -91,7 +93,7 @@ def run_rapids(
 
     # PCA ####
     start_time = time()
-    rsc.pp.pca(adata, n_comps=50)
+    rsc.pp.pca(adata, n_comps=n_comp)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
@@ -99,7 +101,7 @@ def run_rapids(
 
     # t-sne ####
     start_time = time()
-    rsc.tl.tsne(adata, n_pcs=50)
+    rsc.tl.tsne(adata, n_pcs=n_comp)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
@@ -107,7 +109,7 @@ def run_rapids(
 
     # UMAP ####
     start_time = time()
-    rsc.pp.neighbors(adata, n_neighbors=10, n_pcs=50)
+    rsc.pp.neighbors(adata, n_neighbors=n_neig, n_pcs=n_comp)
     rsc.tl.umap(adata)
     end_time = time()
     time_elapsed = end_time - start_time

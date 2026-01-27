@@ -31,6 +31,18 @@ parser.add_argument(
     "--method_name", type=str, choices=["scanpy", "rapids"], help="Method to run"
 )
 parser.add_argument("--resolution", type=float, help="clustering resolution")
+parser.add_argument(
+    "--n_comp",
+    type=int,
+    default=50,
+    help="number of PCA components to use for KNN graph construction",
+)
+parser.add_argument(
+    "--n_neig",
+    type=int,
+    default=15,
+    help="number of neighbors to use for KNN graph construction",
+)
 # only have manual filtering
 parser.add_argument(
     "--filter",
@@ -62,9 +74,13 @@ adata = sc.read_h5ad(args.data_h5ad)
 adata.var_names_make_unique()
 
 if args.method_name == "scanpy":
-    adata = run_scanpy(adata, args.resolution, args.filter, timings)
+    adata = run_scanpy(
+        adata, args.resolution, args.n_comp, args.n_neig, args.filter, timings
+    )
 elif args.method_name == "rapids":
-    adata = run_rapids(adata, args.resolution, args.filter, timings)
+    adata = run_rapids(
+        adata, args.resolution, args.n_comp, args.n_neig, args.filter, timings
+    )
 
 
 # Save timings as JSON

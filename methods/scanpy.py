@@ -6,6 +6,8 @@ import scanpy as sc
 def run_scanpy(
     adata: sc.AnnData,
     resolution: float,
+    n_comp: int,
+    n_neig: int,
     filter: str,
     timings: dict[str, None | float],
 ) -> sc.AnnData:
@@ -76,7 +78,7 @@ def run_scanpy(
 
     # PCA ####
     start_time = time()
-    sc.tl.pca(adata, svd_solver="arpack")
+    sc.tl.pca(adata, svd_solver="arpack", n_comps=n_comp)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
@@ -92,7 +94,7 @@ def run_scanpy(
 
     # UMAP ####
     start_time = time()
-    sc.pp.neighbors(adata, n_neighbors=10, n_pcs=50)
+    sc.pp.neighbors(adata, n_neighbors=n_neig, n_pcs=n_comp)
     sc.tl.umap(adata)
     end_time = time()
     time_elapsed = end_time - start_time
