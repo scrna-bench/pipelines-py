@@ -43,6 +43,12 @@ parser.add_argument(
     default=15,
     help="number of neighbors to use for KNN graph construction",
 )
+parser.add_argument(
+    "--n_hvg",
+    type=int,
+    default=1000,
+    help="number of highly variable genes to use",
+)
 # only have manual filtering
 parser.add_argument(
     "--filter",
@@ -75,11 +81,23 @@ adata.var_names_make_unique()
 
 if args.method_name == "scanpy":
     adata = run_scanpy(
-        adata, args.resolution, args.n_comp, args.n_neig, args.filter, timings
+        adata,
+        args.resolution,
+        args.n_comp,
+        args.n_neig,
+        args.n_hvg,
+        args.filter,
+        timings,
     )
 elif args.method_name == "rapids":
     adata = run_rapids(
-        adata, args.resolution, args.n_comp, args.n_neig, args.filter, timings
+        adata,
+        args.resolution,
+        args.n_comp,
+        args.n_neig,
+        args.n_hvg,
+        args.filter,
+        timings,
     )
 
 

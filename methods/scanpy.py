@@ -8,6 +8,7 @@ def run_scanpy(
     resolution: float,
     n_comp: int,
     n_neig: int,
+    n_hvg: int,
     filter: str,
     timings: dict[str, None | float],
 ) -> sc.AnnData:
@@ -57,7 +58,7 @@ def run_scanpy(
     # Identification of highly variable features (feature selection) ####
     start_time = time()
     sc.pp.highly_variable_genes(
-        adata, min_mean=0.0125, max_mean=3, min_disp=0.5, n_top_genes=1000
+        adata, min_mean=0.0125, max_mean=3, min_disp=0.5, n_top_genes=n_hvg
     )
     adata.raw = adata
     adata = adata[:, adata.var.highly_variable]

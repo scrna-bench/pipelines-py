@@ -12,6 +12,7 @@ def run_rapids(
     resolution: float,
     n_comp: int,
     n_neig: int,
+    n_hvg: int,
     filter: str,
     timings: dict[str, None | float],
 ) -> sc.AnnData:
@@ -69,7 +70,7 @@ def run_rapids(
     start_time = time()
     rsc.pp.highly_variable_genes(
         adata,
-        n_top_genes=1000,
+        n_top_genes=n_hvg,
         flavor="seurat_v3",
         layer="counts",
     )
