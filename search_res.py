@@ -4,14 +4,15 @@
 
 
 def binary_search(
-    adata, n_clust_target,
+    adata,
+    n_clust_target,
     cluster_fn,
     resolution_boundaries=None,
     resolution_init=1,
     resolution_update=2,
     num_rs=1e2,
-    tolerance = 1e-3,
-    seed = 2023,
+    tolerance=1e-3,
+    seed=2023,
     **kwargs,
 ):
     """
@@ -86,22 +87,28 @@ def binary_search(
                 res *= resolution_update
                 y, n_clust = do_clustering(res)
             rb = res
-        if n_clust == n_clust_target: lb = rb = res
+        if n_clust == n_clust_target:
+            lb = rb = res
 
     i = 0
     while (rb - lb > tolerance or lb == rb) and i < num_rs:
-        mid = (lb * rb) ** .5
+        mid = (lb * rb) ** 0.5
         y, n_clust = do_clustering(mid)
-        if n_clust == n_clust_target or lb == rb: break
-        if n_clust > n_clust_target: rb = mid
-        else: lb = mid
+        if n_clust == n_clust_target or lb == rb:
+            break
+        if n_clust > n_clust_target:
+            rb = mid
+        else:
+            lb = mid
         i += 1
 
     # Check if the situation is met
     if n_clust != n_clust_target:
-        warnings.warn(f"Warning: n_clust = {n_clust_target} not found in binary search, \
+        warnings.warn(
+            f"Warning: n_clust = {n_clust_target} not found in binary search, \
         return best proximation with res = {mid} and \
-        n_clust = {n_clust}. (rb = {rb}, lb = {lb}, i = {i})")
+        n_clust = {n_clust}. (rb = {rb}, lb = {lb}, i = {i})"
+        )
 
     final_res = mid if i > 0 else res
     return y, final_res

@@ -135,7 +135,7 @@ hvg_list.to_csv(
 pca_df = pd.DataFrame(
     adata.obsm["X_pca"],
     index=adata.obs_names,
-    columns=[f"PC{i+1}" for i in range(adata.obsm["X_pca"].shape[1])],
+    columns=[f"PC{i + 1}" for i in range(adata.obsm["X_pca"].shape[1])],
 )
 pca_df.to_csv(
     os.path.join(args.output_dir, f"{args.name}.pca.tsv"),
