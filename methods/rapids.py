@@ -5,11 +5,12 @@ import cupy as cp
 import rmm
 import rapids_singlecell as rsc
 from rmm.allocators.cupy import rmm_cupy_allocator
+from search_res import binary_search
 
 
 def run_rapids(
     adata: sc.AnnData,
-    resolution: float,
+    n_clusters: int,
     n_comp: int,
     n_neig: int,
     n_hvg: int,
@@ -119,7 +120,7 @@ def run_rapids(
 
     # louvain ####
     start_time = time()
-    rsc.tl.louvain(adata, resolution=resolution)
+    binary_search(adata, n_clusters, rsc.tl.louvain)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
@@ -127,7 +128,7 @@ def run_rapids(
 
     # leiden ####
     start_time = time()
-    rsc.tl.leiden(adata, resolution=resolution)
+    binary_search(adata, n_clusters, rsc.tl.leiden)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)

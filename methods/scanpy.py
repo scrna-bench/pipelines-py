@@ -1,11 +1,12 @@
 from time import time
 
 import scanpy as sc
+from search_res import binary_search
 
 
 def run_scanpy(
     adata: sc.AnnData,
-    resolution: float,
+    n_clusters: int,
     n_comp: int,
     n_neig: int,
     n_hvg: int,
@@ -104,7 +105,7 @@ def run_scanpy(
 
     # louvain ####
     start_time = time()
-    sc.tl.louvain(adata, resolution=resolution)
+    binary_search(adata, n_clusters, sc.tl.louvain)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
@@ -112,7 +113,7 @@ def run_scanpy(
 
     # leiden ####
     start_time = time()
-    sc.tl.leiden(adata, resolution=resolution)
+    binary_search(adata, n_clusters, sc.tl.leiden)
     end_time = time()
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
