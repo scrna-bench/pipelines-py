@@ -55,45 +55,60 @@ def binary_search(
     ------------
     y: a pandas dataframe with one clumn denoting the clustering results from best resolution and with barcode as index.
     """
-    import numpy as np
     import warnings
 
     method = cluster_fn.__name__
     y = None
+    res = resolution_init
+    mid = None
+    final_res = None
+    num_rs = max(1, int(num_rs))
 
     def do_clustering(res):
         cluster_fn(adata, resolution=res)
         y = adata.obs[[method]].astype(int)
-        n_clust = len(np.unique(y))
+        n_clust = y[method].nunique()
         return y, n_clust
 
     lb = rb = None
     n_clust = -1
     if resolution_boundaries is not None:
         lb, rb = resolution_boundaries
+        if lb > rb:
+            lb, rb = rb, lb
     else:
-        res = resolution_init
         y, n_clust = do_clustering(res)
+        final_res = res
         # coarse search for the boundary containing n_clust_target
         if n_clust > n_clust_target:
-            while n_clust > n_clust_target and res > 1e-4:
+            coarse_i = 0
+            while n_clust > n_clust_target and res > 1e-4 and coarse_i < num_rs:
                 rb = res
                 res /= resolution_update
                 y, n_clust = do_clustering(res)
+                final_res = res
+                coarse_i += 1
             lb = res
         elif n_clust < n_clust_target:
-            while n_clust < n_clust_target:
+            coarse_i = 0
+            while n_clust < n_clust_target and coarse_i < num_rs:
                 lb = res
                 res *= resolution_update
                 y, n_clust = do_clustering(res)
+                final_res = res
+                coarse_i += 1
             rb = res
         if n_clust == n_clust_target:
             lb = rb = res
+
+    if lb is None or rb is None:
+        lb = rb = res
 
     i = 0
     while (rb - lb > tolerance or lb == rb) and i < num_rs:
         mid = (lb * rb) ** 0.5
         y, n_clust = do_clustering(mid)
+        final_res = mid
         if n_clust == n_clust_target or lb == rb:
             break
         if n_clust > n_clust_target:
@@ -106,9 +121,8 @@ def binary_search(
     if n_clust != n_clust_target:
         warnings.warn(
             f"Warning: n_clust = {n_clust_target} not found in binary search, \
-        return best proximation with res = {mid} and \
+        return best proximation with res = {final_res} and \
         n_clust = {n_clust}. (rb = {rb}, lb = {lb}, i = {i})"
         )
 
-    final_res = mid if i > 0 else res
     return y, final_res
