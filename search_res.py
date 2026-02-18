@@ -1,3 +1,8 @@
+# Derived from search_res.py
+# Source: https://github.com/SpatialHackathon/SACCELERATOR
+# Original code licensed under MIT-0
+
+
 def binary_search(
     adata, n_clust_target,
     cluster_fn,
