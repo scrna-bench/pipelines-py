@@ -56,7 +56,7 @@ def binary_search(
     y = None
 
     def do_clustering(res):
-        cluster_fn(adata, resolution=res, random_state=seed, **kwargs)
+        cluster_fn(adata, resolution=res)
         y = adata.obs[[method]].astype(int)
         n_clust = len(np.unique(y))
         return y, n_clust
