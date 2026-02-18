@@ -30,7 +30,7 @@ parser.add_argument(
 parser.add_argument(
     "--method_name", type=str, choices=["scanpy", "rapids"], help="Method to run"
 )
-parser.add_argument("--resolution", type=float, help="clustering resolution")
+parser.add_argument("--n_cluster", type=int, help="target number of clusters")
 parser.add_argument(
     "--n_comp",
     type=int,
@@ -73,6 +73,11 @@ timings: dict[str, float | None] = {
     "leiden": None,
 }
 
+resolutions: dict[str, float | None] = {
+    "louvain": None,
+    "leiden": None,
+}
+
 sc.settings.verbosity = 3
 
 # data ####
@@ -82,28 +87,34 @@ adata.var_names_make_unique()
 if args.method_name == "scanpy":
     adata = run_scanpy(
         adata,
-        args.resolution,
+        args.n_cluster,
         args.n_comp,
         args.n_neig,
         args.n_hvg,
         args.filter,
         timings,
+        resolutions,
     )
 elif args.method_name == "rapids":
     adata = run_rapids(
         adata,
-        args.resolution,
+        args.n_cluster,
         args.n_comp,
         args.n_neig,
         args.n_hvg,
         args.filter,
         timings,
+        resolutions,
     )
 
 
 # Save timings as JSON
 with open(os.path.join(args.output_dir, f"{args.name}.timings.json"), "w") as f:
     json.dump(timings, f, indent=2)
+
+# Save resolutions as JSON
+with open(os.path.join(args.output_dir, f"{args.name}.resolutions.json"), "w") as f:
+    json.dump(resolutions, f, indent=2)
 
 # Save cluster assignments as TSV
 adata.obs[["louvain", "leiden"]].reset_index(names="cell_id").to_csv(
@@ -124,7 +135,7 @@ hvg_list.to_csv(
 pca_df = pd.DataFrame(
     adata.obsm["X_pca"],
     index=adata.obs_names,
-    columns=[f"PC{i+1}" for i in range(adata.obsm["X_pca"].shape[1])],
+    columns=[f"PC{i + 1}" for i in range(adata.obsm["X_pca"].shape[1])],
 )
 pca_df.to_csv(
     os.path.join(args.output_dir, f"{args.name}.pca.tsv"),

@@ -5,16 +5,18 @@ import cupy as cp
 import rmm
 import rapids_singlecell as rsc
 from rmm.allocators.cupy import rmm_cupy_allocator
+from search_res import binary_search
 
 
 def run_rapids(
     adata: sc.AnnData,
-    resolution: float,
+    n_cluster: int,
     n_comp: int,
     n_neig: int,
     n_hvg: int,
     filter: str,
     timings: dict[str, None | float],
+    resolutions: dict[str, None | float],
 ) -> sc.AnnData:
     rmm.reinitialize(
         managed_memory=False,
@@ -119,19 +121,23 @@ def run_rapids(
 
     # louvain ####
     start_time = time()
-    rsc.tl.louvain(adata, resolution=resolution)
+    _, res = binary_search(adata, n_cluster, rsc.tl.louvain)
     end_time = time()
     time_elapsed = end_time - start_time
+    print(f"Louvain resolution: {res}")
     print("Time Elapsed:", time_elapsed)
     timings["louvain"] = time_elapsed
+    resolutions["louvain"] = res
 
     # leiden ####
     start_time = time()
-    rsc.tl.leiden(adata, resolution=resolution)
+    _, res = binary_search(adata, n_cluster, rsc.tl.leiden)
     end_time = time()
     time_elapsed = end_time - start_time
+    print(f"Leiden resolution: {res}")
     print("Time Elapsed:", time_elapsed)
     timings["leiden"] = time_elapsed
+    resolutions["leiden"] = res
 
     rsc.get.anndata_to_CPU(adata, convert_all=True)
 

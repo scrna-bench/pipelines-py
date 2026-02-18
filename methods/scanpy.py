@@ -1,16 +1,18 @@
 from time import time
 
 import scanpy as sc
+from search_res import binary_search
 
 
 def run_scanpy(
     adata: sc.AnnData,
-    resolution: float,
+    n_cluster: int,
     n_comp: int,
     n_neig: int,
     n_hvg: int,
     filter: str,
     timings: dict[str, None | float],
+    resolutions: dict[str, None | float],
 ) -> sc.AnnData:
     # find mitocondrial genes ####
     start_time = time()
@@ -104,18 +106,22 @@ def run_scanpy(
 
     # louvain ####
     start_time = time()
-    sc.tl.louvain(adata, resolution=resolution)
+    _, res = binary_search(adata, n_cluster, sc.tl.louvain)
     end_time = time()
     time_elapsed = end_time - start_time
+    print(f"Louvain resolution: {res}")
     print("Time Elapsed:", time_elapsed)
     timings["louvain"] = time_elapsed
+    resolutions["louvain"] = res
 
     # leiden ####
     start_time = time()
-    sc.tl.leiden(adata, resolution=resolution)
+    _, res = binary_search(adata, n_cluster, sc.tl.leiden)
     end_time = time()
     time_elapsed = end_time - start_time
+    print(f"Leiden resolution: {res}")
     print("Time Elapsed:", time_elapsed)
     timings["leiden"] = time_elapsed
+    resolutions["leiden"] = res
 
     return adata
