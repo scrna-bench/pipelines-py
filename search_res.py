@@ -103,4 +103,5 @@ def binary_search(
         return best proximation with res = {mid} and \
         n_clust = {n_clust}. (rb = {rb}, lb = {lb}, i = {i})")
 
-    return y
+    final_res = mid if i > 0 else res
+    return y, final_res

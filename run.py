@@ -73,6 +73,11 @@ timings: dict[str, float | None] = {
     "leiden": None,
 }
 
+resolutions: dict[str, float | None] = {
+    "louvain": None,
+    "leiden": None,
+}
+
 sc.settings.verbosity = 3
 
 # data ####
@@ -88,6 +93,7 @@ if args.method_name == "scanpy":
         args.n_hvg,
         args.filter,
         timings,
+        resolutions,
     )
 elif args.method_name == "rapids":
     adata = run_rapids(
@@ -98,12 +104,17 @@ elif args.method_name == "rapids":
         args.n_hvg,
         args.filter,
         timings,
+        resolutions,
     )
 
 
 # Save timings as JSON
 with open(os.path.join(args.output_dir, f"{args.name}.timings.json"), "w") as f:
     json.dump(timings, f, indent=2)
+
+# Save resolutions as JSON
+with open(os.path.join(args.output_dir, f"{args.name}.resolutions.json"), "w") as f:
+    json.dump(resolutions, f, indent=2)
 
 # Save cluster assignments as TSV
 adata.obs[["louvain", "leiden"]].reset_index(names="cell_id").to_csv(
