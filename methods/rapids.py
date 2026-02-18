@@ -10,7 +10,7 @@ from search_res import binary_search
 
 def run_rapids(
     adata: sc.AnnData,
-    n_clusters: int,
+    n_cluster: int,
     n_comp: int,
     n_neig: int,
     n_hvg: int,
@@ -121,7 +121,7 @@ def run_rapids(
 
     # louvain ####
     start_time = time()
-    _, res = binary_search(adata, n_clusters, rsc.tl.louvain)
+    _, res = binary_search(adata, n_cluster, rsc.tl.louvain)
     end_time = time()
     time_elapsed = end_time - start_time
     print(f"Louvain resolution: {res}")
@@ -131,7 +131,7 @@ def run_rapids(
 
     # leiden ####
     start_time = time()
-    _, res = binary_search(adata, n_clusters, rsc.tl.leiden)
+    _, res = binary_search(adata, n_cluster, rsc.tl.leiden)
     end_time = time()
     time_elapsed = end_time - start_time
     print(f"Leiden resolution: {res}")

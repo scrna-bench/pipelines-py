@@ -6,7 +6,7 @@ from search_res import binary_search
 
 def run_scanpy(
     adata: sc.AnnData,
-    n_clusters: int,
+    n_cluster: int,
     n_comp: int,
     n_neig: int,
     n_hvg: int,
@@ -106,7 +106,7 @@ def run_scanpy(
 
     # louvain ####
     start_time = time()
-    _, res = binary_search(adata, n_clusters, sc.tl.louvain)
+    _, res = binary_search(adata, n_cluster, sc.tl.louvain)
     end_time = time()
     time_elapsed = end_time - start_time
     print(f"Louvain resolution: {res}")
@@ -116,7 +116,7 @@ def run_scanpy(
 
     # leiden ####
     start_time = time()
-    _, res = binary_search(adata, n_clusters, sc.tl.leiden)
+    _, res = binary_search(adata, n_cluster, sc.tl.leiden)
     end_time = time()
     time_elapsed = end_time - start_time
     print(f"Leiden resolution: {res}")

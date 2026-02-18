@@ -30,7 +30,7 @@ parser.add_argument(
 parser.add_argument(
     "--method_name", type=str, choices=["scanpy", "rapids"], help="Method to run"
 )
-parser.add_argument("--n_clusters", type=int, help="target number of clusters")
+parser.add_argument("--n_cluster", type=int, help="target number of clusters")
 parser.add_argument(
     "--n_comp",
     type=int,
@@ -87,7 +87,7 @@ adata.var_names_make_unique()
 if args.method_name == "scanpy":
     adata = run_scanpy(
         adata,
-        args.n_clusters,
+        args.n_cluster,
         args.n_comp,
         args.n_neig,
         args.n_hvg,
@@ -98,7 +98,7 @@ if args.method_name == "scanpy":
 elif args.method_name == "rapids":
     adata = run_rapids(
         adata,
-        args.n_clusters,
+        args.n_cluster,
         args.n_comp,
         args.n_neig,
         args.n_hvg,
