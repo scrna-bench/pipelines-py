@@ -27,7 +27,7 @@ def run_scanpy(
     timings["find_mit_gene"] = time_elapsed
 
     print("after loading:", adata.shape)
-    sys.stderr.write("cells after loading: " + str(adata.shape))
+    sys.stderr.write("cells after loading: " + str(adata.shape) + "\n")
 
     # filter data ####
     start_time = time()
@@ -40,13 +40,14 @@ def run_scanpy(
         sc.pp.filter_cells(adata, min_genes=min_genes)
         sc.pp.filter_genes(adata, min_cells=3)
         print("after filtering1:", adata.shape)
+        sys.stderr.write("cells after filtering1: " + str(adata.shape) + "\n")
 
         adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
         adata = adata[adata.obs.pct_counts_mt < max_mt, :]
 
     end_time = time()
     print("after filtering2:", adata.shape)
-    sys.stderr.write("cells after filtering2: " + str(adata.shape))
+    sys.stderr.write("cells after filtering2: " + str(adata.shape) + "\n")
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["filter"] = time_elapsed
