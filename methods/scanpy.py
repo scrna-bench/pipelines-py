@@ -43,7 +43,7 @@ def run_scanpy(
         sys.stderr.write("cells after filtering1: " + str(adata.shape) + "\n")
 
         sys.stderr.write("mt pcts [0:3]: " + str(adata.obs.pct_counts_mt.values[0:3]) + "\n")
-        sys.stderr.write("cells detected [0:3]: " + str(adata.obs.n_genes_by_counts[0:3]) + "\n")
+        sys.stderr.write("cells detected [0:3]: " + str(adata.obs.n_genes_by_counts.values[0:3]) + "\n")
         #sys.stderr.write("mt pcts [0:3]: " + str(adata.obs.pct_counts_mt.values[0:3]) + "\n")
 
         adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
