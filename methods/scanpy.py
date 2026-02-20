@@ -2,6 +2,7 @@ from time import time
 
 import scanpy as sc
 from search_res import binary_search
+import sys
 
 
 def run_scanpy(
@@ -26,6 +27,7 @@ def run_scanpy(
     timings["find_mit_gene"] = time_elapsed
 
     print("after loading:", adata.shape)
+    sys.stderr.write("cells after loading: " + str(adata.shape))
 
     # filter data ####
     start_time = time()
@@ -44,6 +46,7 @@ def run_scanpy(
 
     end_time = time()
     print("after filtering2:", adata.shape)
+    sys.stderr.write("cells after filtering2: " + str(adata.shape))
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["filter"] = time_elapsed
