@@ -43,20 +43,29 @@ def run_rapids(
         qc = adata.uns["qc_thresholds"]
         min_genes = qc[qc["metric"] == "nFeature"]["min"].values[0]
         max_genes = qc[qc["metric"] == "nFeature"]["max"].values[0]
+        max_counts = qc[qc["metric"] == "nCount"]["max"].values[0]
         max_mt = qc[qc["metric"] == "percent.mt"]["max"].values[0]
 
         rsc.pp.filter_cells(adata, min_genes=min_genes)
+        sys.stderr.write("cells after filtering1: " + str(adata.shape) + "\n")
+        rsc.pp.filter_cells(adata, max_genes=max_genes)
+        sys.stderr.write("cells after filtering2: " + str(adata.shape) + "\n")
+        rsc.pp.filter_cells(adata, max_counts=max_counts)
+        sys.stderr.write("cells after filtering3: " + str(adata.shape) + "\n")
         rsc.pp.filter_genes(adata, min_cells=3)
         print("after filtering1:", adata.shape)
 
-        adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
+        #adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
         adata = adata[adata.obs.pct_counts_mt < max_mt, :]
 
     end_time = time()
-    print("after filtering2:", adata.shape)
+    print("after filtering4:", adata.shape)
+    sys.stderr.write("cells after filtering4: " + str(adata.shape) + "\n")
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["filter"] = time_elapsed
+
+
 
     # normalization ####
     start_time = time()
