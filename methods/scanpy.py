@@ -38,6 +38,7 @@ def run_scanpy(
         max_mt = qc[qc["metric"] == "percent.mt"]["max"].values[0]
 
         sc.pp.filter_cells(adata, min_genes=min_genes, max_genes=max_genes)
+        sc.pp.filter_cells(adata, max_genes=max_genes)
         sc.pp.filter_genes(adata, min_cells=3)
         print("after filtering1:", adata.shape)
         sys.stderr.write("cells after filtering1: " + str(adata.shape) + "\n")
