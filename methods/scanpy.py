@@ -42,6 +42,8 @@ def run_scanpy(
         print("after filtering1:", adata.shape)
         sys.stderr.write("cells after filtering1: " + str(adata.shape) + "\n")
 
+        sys.stderr.write("mt pcts [0:3]: " + str(adata.obs.pct_counts_mt.values[0:3]) + "\n")
+
         adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
         adata = adata[adata.obs.pct_counts_mt < max_mt, :]
 
