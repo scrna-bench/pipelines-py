@@ -32,8 +32,14 @@ def run_scanpy(
     # filter data ####
     start_time = time()
     if filter == "manual":
-        sys.stderr.write("mt pcts [0:3]: " + str(adata.obs.pct_counts_mt.values[0:3]) + "\n")
-        sys.stderr.write("cells detected [0:3]: " + str(adata.obs.n_genes_by_counts.values[0:3]) + "\n")
+        sys.stderr.write(
+            "mt pcts [0:3]: " + str(adata.obs.pct_counts_mt.values[0:3]) + "\n"
+        )
+        sys.stderr.write(
+            "cells detected [0:3]: "
+            + str(adata.obs.n_genes_by_counts.values[0:3])
+            + "\n"
+        )
 
         qc = adata.uns["qc_thresholds"]
         min_genes = qc[qc["metric"] == "nFeature"]["min"].values[0]
@@ -49,9 +55,6 @@ def run_scanpy(
         sys.stderr.write("cells after filtering3: " + str(adata.shape) + "\n")
         sc.pp.filter_genes(adata, min_cells=3)
 
-        #sys.stderr.write("mt pcts [0:3]: " + str(adata.obs.pct_counts_mt.values[0:3]) + "\n")
-
-        #adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
         adata = adata[adata.obs.pct_counts_mt < max_mt, :]
 
     end_time = time()

@@ -56,7 +56,7 @@ def run_rapids(
         rsc.pp.filter_genes(adata, min_cells=3)
         print("after filtering1:", adata.shape)
 
-        #adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
+        # adata = adata[adata.obs.n_genes_by_counts < max_genes, :]
         adata = adata[adata.obs.pct_counts_mt < max_mt, :]
 
     end_time = time()
@@ -65,8 +65,6 @@ def run_rapids(
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["filter"] = time_elapsed
-
-
 
     # normalization ####
     start_time = time()

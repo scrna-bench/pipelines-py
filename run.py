@@ -107,7 +107,6 @@ elif args.method_name == "rapids":
         resolutions,
     )
 
-
 # Save timings as JSON
 with open(os.path.join(args.output_dir, f"{args.name}.timings.json"), "w") as f:
     json.dump(timings, f, indent=2)
