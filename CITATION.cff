@@ -5,6 +5,7 @@ title: "pipelines-py"
 authors:
   - family-names: Kitak
     given-names: Tom
+    orcid: "https://orcid.org/0009-0004-1529-4459"
   - family-names: Choudhury
     given-names: Atreya
     orcid: "https://orcid.org/0009-0003-4975-0515"
@@ -12,7 +13,7 @@ authors:
     given-names: Mark
     orcid: "https://orcid.org/0000-0002-3048-5518"
 version: 1.0
-url: "https://github.com/scrna-bench/pipelines-py"
+repository-code: "https://github.com/scrna-bench/pipelines-py"
 license: MIT
 references:
   - type: article
