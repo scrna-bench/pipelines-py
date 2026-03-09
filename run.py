@@ -28,9 +28,20 @@ parser.add_argument(
     "--data.h5ad", dest="data_h5ad", type=str, required=True, help="Input h5ad file"
 )
 parser.add_argument(
+    "--data.clusters_truth_num",
+    dest="clusters_truth_num_path",
+    type=str,
+    required=True,
+    help="input true number of clusters path",
+)
+parser.add_argument(
     "--method_name", type=str, choices=["scanpy", "rapids"], help="Method to run"
 )
-parser.add_argument("--n_cluster", type=int, help="target number of clusters")
+parser.add_argument(
+    "--d_cluster",
+    type=int,
+    help="delta number of clusters with respect to true number of clusters",
+)
 parser.add_argument(
     "--n_comp",
     type=int,
@@ -83,11 +94,15 @@ sc.settings.verbosity = 3
 # data ####
 adata = sc.read_h5ad(args.data_h5ad)
 adata.var_names_make_unique()
+with open(args.clusters_truth_num_path, "r") as f:
+    clusters_truth_num = int(f.read())
+n_cluster = clusters_truth_num + args.d_cluster
+
 
 if args.method_name == "scanpy":
     adata = run_scanpy(
         adata,
-        args.n_cluster,
+        n_cluster,
         args.n_comp,
         args.n_neig,
         args.n_hvg,
@@ -98,7 +113,7 @@ if args.method_name == "scanpy":
 elif args.method_name == "rapids":
     adata = run_rapids(
         adata,
-        args.n_cluster,
+        n_cluster,
         args.n_comp,
         args.n_neig,
         args.n_hvg,
