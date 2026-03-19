@@ -17,15 +17,20 @@ def run_rapids(
     n_hvg: int,
     filter: str,
     timings: dict[str, None | float],
-    resolutions: dict[str, None | float],
+    clustering_info: dict[str, dict[str, None | float | int]],
 ) -> sc.AnnData:
+    start_time = time()
+    # push anndata to GPU ####
     rmm.reinitialize(
         managed_memory=False,
         pool_allocator=False,
     )
     cp.cuda.set_allocator(rmm_cupy_allocator)
-
     rsc.get.anndata_to_GPU(adata)
+    end_time = time()
+    time_elapsed = end_time - start_time
+    print("Time Elapsed:", time_elapsed)
+    timings["gpu_load"] = time_elapsed
 
     # find mitocondrial genes ####
     start_time = time()
@@ -129,23 +134,31 @@ def run_rapids(
 
     # louvain ####
     start_time = time()
-    _, res = binary_search(adata, n_cluster, rsc.tl.louvain)
+    _, res, num_runs = binary_search(adata, n_cluster, rsc.tl.louvain)
     end_time = time()
     time_elapsed = end_time - start_time
+    avg_time_elapsed = time_elapsed / num_runs
     print(f"Louvain resolution: {res}")
-    print("Time Elapsed:", time_elapsed)
-    timings["louvain"] = time_elapsed
-    resolutions["louvain"] = res
+    print(f"Louvain runs: {num_runs}")
+    print("Total Search Time Elapsed:", time_elapsed)
+    print("Average Time per Clustering Run:", avg_time_elapsed)
+    timings["louvain"] = avg_time_elapsed
+    clustering_info["resolutions"]["louvain"] = res
+    clustering_info["num_runs"]["louvain"] = num_runs
 
     # leiden ####
     start_time = time()
-    _, res = binary_search(adata, n_cluster, rsc.tl.leiden)
+    _, res, num_runs = binary_search(adata, n_cluster, rsc.tl.leiden)
     end_time = time()
     time_elapsed = end_time - start_time
+    avg_time_elapsed = time_elapsed / num_runs
     print(f"Leiden resolution: {res}")
-    print("Time Elapsed:", time_elapsed)
-    timings["leiden"] = time_elapsed
-    resolutions["leiden"] = res
+    print(f"Leiden runs: {num_runs}")
+    print("Total Search Time Elapsed:", time_elapsed)
+    print("Average Time per Clustering Run:", avg_time_elapsed)
+    timings["leiden"] = avg_time_elapsed
+    clustering_info["resolutions"]["leiden"] = res
+    clustering_info["num_runs"]["leiden"] = num_runs
 
     rsc.get.anndata_to_CPU(adata, convert_all=True)
 

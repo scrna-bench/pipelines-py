@@ -72,6 +72,7 @@ args, _ = parser.parse_known_args()
 
 # time object to store time involved (in seconds) in each step
 timings: dict[str, float | None] = {
+    "gpu_load": None,
     "find_mit_gene": None,
     "filter": None,
     "normalization": None,
@@ -84,9 +85,15 @@ timings: dict[str, float | None] = {
     "leiden": None,
 }
 
-resolutions: dict[str, float | None] = {
-    "louvain": None,
-    "leiden": None,
+clustering_info: dict[str, dict[str, float | int | None]] = {
+    "resolutions": {
+        "louvain": None,
+        "leiden": None,
+    },
+    "num_runs": {
+        "louvain": None,
+        "leiden": None,
+    },
 }
 
 sc.settings.verbosity = 3
@@ -108,7 +115,7 @@ if args.method_name == "scanpy":
         args.n_hvg,
         args.filter,
         timings,
-        resolutions,
+        clustering_info,
     )
 elif args.method_name == "rapids":
     adata = run_rapids(
@@ -119,16 +126,16 @@ elif args.method_name == "rapids":
         args.n_hvg,
         args.filter,
         timings,
-        resolutions,
+        clustering_info,
     )
 
 # Save timings as JSON
 with open(os.path.join(args.output_dir, f"{args.name}.timings.json"), "w") as f:
     json.dump(timings, f, indent=2)
 
-# Save resolutions as JSON
-with open(os.path.join(args.output_dir, f"{args.name}.resolutions.json"), "w") as f:
-    json.dump(resolutions, f, indent=2)
+# Save clustering metadata as JSON
+with open(os.path.join(args.output_dir, f"{args.name}.clustering_info.json"), "w") as f:
+    json.dump(clustering_info, f, indent=2)
 
 # Save cluster assignments as TSV
 adata.obs[["louvain", "leiden"]].reset_index(names="cell_id").to_csv(

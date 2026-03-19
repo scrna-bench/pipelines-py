@@ -12,7 +12,6 @@ def binary_search(
     resolution_update=2,
     num_rs=1e2,
     tolerance=1e-3,
-    seed=2023,
     **kwargs,
 ):
     """
@@ -22,38 +21,32 @@ def binary_search(
     ------------
     adata (Anndata)
         AnnData object for clustering. Should have neighbor graphs already.
-
     target_n_clusters (int)
         The desired number of clusters.
-
     cluster_fn (callable)
         The clustering function to call, e.g. sc.tl.louvain or rsc.tl.louvain.
         The function name must match the adata.obs column it writes to ("louvain" or "leiden").
-
     resolution_boundary (list)
         a list defining the boundary for resolution search:
-
             - If `None`, the function will find a rough boundary that contains the target resolution using `resolution_init` and `resolution_update`;
             - If defined, follows [`left_boundary`, `right_boundary`];
-
     resolution_init (float)
         initial resolution to start the search with.
-
     resolution_update(float)
         a positive number for the scale of coarse boundary definition. Only used when `resolution_boundary = None`.
-
     num_rs (int):
         Highest number of iteration for search.
-
     tolerance (float):
         Smallest gap between search boundaries. search will stop if the interval is smaller than tolerance.
 
-    seed (int):
-        seed for clustering.
-
     Returns
     ------------
-    y: a pandas dataframe with one clumn denoting the clustering results from best resolution and with barcode as index.
+    y:
+        A dataframe with the clustering results from the selected resolution.
+    final_res:
+        The selected clustering resolution.
+    num_runs:
+        The number of times the clustering function was invoked during search.
     """
     import warnings
 
@@ -63,8 +56,11 @@ def binary_search(
     mid = None
     final_res = None
     num_rs = max(1, int(num_rs))
+    num_runs = 0
 
     def do_clustering(res):
+        nonlocal num_runs
+        num_runs += 1
         cluster_fn(adata, resolution=res)
         y = adata.obs[[method]].astype(int)
         n_clust = y[method].nunique()
@@ -125,4 +121,4 @@ def binary_search(
         n_clust = {n_clust}. (rb = {rb}, lb = {lb}, i = {i})"
         )
 
-    return y, final_res
+    return y, final_res, num_runs
