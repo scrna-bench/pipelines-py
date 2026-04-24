@@ -68,7 +68,16 @@ parser.add_argument(
     default="manual",
     help="filtering strategy (manual uses suggested cutoffs; auto uses package QC)",
 )
+parser.add_argument(
+    "--max_threads",
+    type=int,
+    default=1,
+    help="number of threads to use",
+)
 args, _ = parser.parse_known_args()
+
+os.environ["OMP_NUM_THREADS"] = str(args.max_threads)
+os.environ["MKL_NUM_THREADS"] = str(args.max_threads)
 
 # time object to store time involved (in seconds) in each step
 timings: dict[str, float | None] = {
