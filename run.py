@@ -94,18 +94,18 @@ timings: dict[str, float | None] = {
     "leiden": None,
 }
 
-starts_ends: dict[str, float | None] = {
-    "gpu_load": None,
-    "find_mit_gene": None,
-    "filter": None,
-    "normalization": None,
-    "hvg": None,
-    "scaling": None,
-    "pca": None,
-    "t_sne": None,
-    "umap": None,
-    "louvain": None,
-    "leiden": None,
+starts_ends: dict[str, tuple[float | None, float | None]] = {
+    "gpu_load": (None, None),
+    "find_mit_gene": (None, None),
+    "filter": (None, None),
+    "normalization": (None, None),
+    "hvg": (None, None),
+    "scaling": (None, None),
+    "pca": (None, None),
+    "t_sne": (None, None),
+    "umap": (None, None),
+    "louvain": (None, None),
+    "leiden": (None, None),
 }
 
 clustering_info: dict[str, dict[str, float | int | None]] = {
