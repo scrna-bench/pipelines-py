@@ -94,6 +94,20 @@ timings: dict[str, float | None] = {
     "leiden": None,
 }
 
+starts_ends: dict[str, float | None] = {
+    "gpu_load": None,
+    "find_mit_gene": None,
+    "filter": None,
+    "normalization": None,
+    "hvg": None,
+    "scaling": None,
+    "pca": None,
+    "t_sne": None,
+    "umap": None,
+    "louvain": None,
+    "leiden": None,
+}
+
 clustering_info: dict[str, dict[str, float | int | None]] = {
     "resolutions": {
         "louvain": None,
@@ -124,6 +138,7 @@ if args.method_name == "scanpy":
         args.n_hvg,
         args.filter,
         timings,
+        starts_ends,
         clustering_info,
     )
 elif args.method_name == "rapids":
@@ -134,6 +149,7 @@ elif args.method_name == "rapids":
         args.n_neig,
         args.n_hvg,
         args.filter,
+        starts_ends,
         timings,
         clustering_info,
     )
@@ -141,6 +157,10 @@ elif args.method_name == "rapids":
 # Save timings as JSON
 with open(os.path.join(args.output_dir, f"{args.name}.timings.json"), "w") as f:
     json.dump(timings, f, indent=2)
+
+# Save starts_ends as JSON
+with open(os.path.join(args.output_dir, f"{args.name}.timings_sandwiches.json"), "w") as f:
+    json.dump(starts_ends, f, indent=2)
 
 # Save clustering metadata as JSON
 with open(os.path.join(args.output_dir, f"{args.name}.clustering_info.json"), "w") as f:
