@@ -70,8 +70,9 @@ parser.add_argument(
 )
 args, _ = parser.parse_known_args()
 
+os.environ["OPENBLAS_NUM_THREADS"] = str(args.max_threads)
 os.environ["OMP_NUM_THREADS"] = str(args.max_threads)
-os.environ["MKL_NUM_THREADS"] = str(args.max_threads)
+os.environ["MKL_NUM_THREADS"] = str(args.max_threads) # apparently doesn't do much here
 
 import pandas as pd
 import scanpy as sc
