@@ -9,14 +9,8 @@ import argparse
 import json
 from pathlib import Path
 
-import pandas as pd
-import scanpy as sc
-
 repo_dir = Path(__file__).parent
 sys.path.insert(0, str(repo_dir))
-
-from methods import run_scanpy, run_rapids
-
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description="Scanpy single-cell analysis pipeline")
@@ -78,6 +72,12 @@ args, _ = parser.parse_known_args()
 
 os.environ["OMP_NUM_THREADS"] = str(args.max_threads)
 os.environ["MKL_NUM_THREADS"] = str(args.max_threads)
+
+import pandas as pd
+import scanpy as sc
+
+from methods import run_scanpy, run_rapids
+
 
 # time object to store time involved (in seconds) in each step
 timings: dict[str, float | None] = {
