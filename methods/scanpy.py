@@ -106,7 +106,7 @@ def run_scanpy(
     start_time = time()
     sc.tl.pca(adata, svd_solver="arpack", n_comps=n_comp)
     end_time = time()
-    starts_ends["scaling"] = (start_time, end_time)
+    starts_ends["pca"] = (start_time, end_time)
     time_elapsed = end_time - start_time
     print("Time Elapsed:", time_elapsed)
     timings["pca"] = time_elapsed
