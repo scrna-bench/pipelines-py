@@ -1,2 +1,4 @@
 entrypoints:
-  default: run.py
+  scanpy: pipelines/run_scanpy.py
+  rapids: pipelines/run_rapids.py
+  brisc: pipelines/run_brisc.py

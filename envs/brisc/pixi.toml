@@ -1,0 +1,15 @@
+# brisc pipeline (CPU).
+[workspace]
+name = "pipelines-py-brisc"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.12.*"
+brisc = "0.2.6.*"
+polars = "==2.1.0"
+pandas = "*"
+numpy = "*"
+
+[pypi-dependencies]
+obkit = "==0.0.4"
