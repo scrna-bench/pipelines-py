@@ -1,0 +1,37 @@
+# rapids-singlecell 0.13.5 pipeline (GPU, CUDA 12). RAPIDS 26.02 from conda, as in
+# the v1.1 benchmark image (rapidsai/base:26.02-cuda12-py3.12); scanpy stack
+# pinned to the same versions as envs/scanpy.
+[workspace]
+name = "pipelines-py-rsc-0.13"
+channels = ["rapidsai", "conda-forge"]
+platforms = ["linux-64"]
+
+[system-requirements]
+cuda = "12"
+
+[dependencies]
+python = "3.12.*"
+cuda-version = "12.*"
+cudf = "26.02.*"
+cuml = "26.02.*"
+cugraph = "26.02.*"
+cuvs = "26.02.*"
+rmm = "26.02.*"
+cupy = "*"
+numpy = "==2.1.3"
+scipy = "==1.15.2"
+pandas = "==2.2.3"
+scikit-learn = "==1.6.1"
+h5py = "==3.13.0"
+anndata = "==0.11.3"
+scanpy = "==1.10.4"
+umap-learn = "==0.5.7"
+statsmodels = "==0.14.4"
+polars = "==2.1.0"
+scikit-misc = "*"
+scikit-image = "*"
+docrep = "*"
+
+[pypi-dependencies]
+rapids-singlecell = "==0.13.5"
+obkit = "==0.0.4"
